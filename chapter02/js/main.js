@@ -76,25 +76,38 @@ window.onload = function(){
 		//rootSceneにスプライトを追加します。
 		core.rootScene.addChild(player);
 
-		player.addEventListener("enterframe", function(e) {
+		// キー入力を検出するには、「Core」オブジェクトの「input」プロパティを使います。
+		// enchant.jsのサポートする入力は、「左」「右」「上」「下」「a」「b」ボタン６つです。
+		// それぞれのボタンにプロパティとキーは以下の通りです。
+		// core.input.left : 左キー押下で反応
+		// core.input.right : 右キー押下で反応
+		// core.input.up : 上キー押下で反応
+		// core.input.down : 下キー押下で反応
+		// core.input.a : 指定した特定のキーを押下で反応
+		// core.input.b : 指定した特定のキーを押下で反応
+		player.addEventListener(Event.ENTER_FRAME, function(e) {
+			// 左ボタンが押されたら、スプライトをx方向に「-4」ピクセル移動
 			if(core.input.left) {
 				if(this.x> 0) {
 					this.x -=4;
 				}
 			}
 
+			// 右ボタンが押されたら、スプライトをy方向に「4」ピクセル移動
 			if(core.input.right) {
 				if(this.x + player_s.w< canvas.width) {
 					this.x += 4;
 				}
 			}
 
+			// 上ボタンが押されたら、スプライトをy方向に「-4」ピクセル移動
 			if(core.input.up) {
 				if(this.y > 0) {
 					this.y -= 4
 				}
 			}
 
+			// 下ボタンが押されたら、スプライトをy方向に「4」ピクセル移動
 			if(core.input.down) {
 				if(this.y + player_s.h < canvas.height) {
 					this.y += 4
