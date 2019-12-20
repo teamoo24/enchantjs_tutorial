@@ -116,7 +116,15 @@ window.onload = function(){
 		});
 
 		// 「touchmove」イベントが発生したときに実行するリスナを登録する
-		player.addEventListener("touchmove",function(e) {
+		// このタッチイベントはキャラクタに付いてるのでマップをドラッグしてもなにも起こらない
+		player.addEventListener(Event.TOUCH_MOVE,function(e) {
+			// イベントリスナを登録するには、「EventTarget」オブジェクトの「addEventListener」メソッドを使います。
+			// 引数には、イベントタイプとリスナ(イベント発生時に実行する関数)を指定します。
+			// ここでは、スプライトの「TOUCH_MOVE」イベントに対するリストを登録しています。
+			// イベントの種類に対しては http://wise9.github.io/enchant.js/doc/core/ja/symbols/enchant.Event.htmlを参考にする
+
+
+			// スプライトをタッチして移動した場合、またはドラッグした場合に移動する。
 			this.x = e.x - this.width/2;
 			this.y = e.y - this.height/2;
 		});
