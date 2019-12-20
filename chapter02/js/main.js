@@ -32,13 +32,28 @@ window.onload = function(){
 
 	// bettyのsrcを指定
 	betty = './img/betty.png'
+	// flowersのsrcを指定
 	flowers = './img/flowers.png'
+	// one_0のsrcを指定
+	one_0 = './sound/one_0.mp3'
+	// Readyのsrcを指定
+	Ready = './sound/Ready.wav'
+
 
 	// ゲームで使用する画像ファイルをプリロードするには「Core」オブジェクトの「preload」メソッド
 	// (「core.preload」)を使います。引数には、画像ファイルのパスを指定します。
 	// 複数の場合には、「,」で区切って列挙します。
-	// ゲームで使用する画像ファイルを指定
-	core.preload(betty, flowers);
+
+	// ゲームで使用する画像ファイルと音ファイルを指定
+	core.preload(betty, flowers, one_0, Ready);
+
+	// サウンドを再生するには、まず、「Sound」オブジェクトを「load」メソッドでサウンドファイルを
+	// 読み込みます。引数には「mp3」形式、「wab」形式のサウンドファイルのパスとMIME Type(省略可)を指定します。
+
+	// BGM用のサウンドファイルを読み込み
+	core.bgm = Sound.load(one_0);
+	// SE用のサウンドファイルを読み込み
+	core.se = Sound.load(Ready);
 
 	// ファイルのプリロードが完了したときに実行される関数
 	core.onload = function() {
@@ -56,14 +71,6 @@ window.onload = function(){
 		// [12][13][14][15]
 		// ＊各番号はスプライトのフレーム番号に相応します！
 
-		// スプライトを作成する
-		// frame : 表示するフレームの番号
-		// image : 表示する画像
-		// rotation : 回転角度
-		// scaleX : x方向の倍率
-		// scaleY : y方向の倍率
-		// x : x座標
-		// y : y座標
 
 		var player = new Sprite(player_s.w, player_s.h);
 		// スプライトの主なプロパティは、次の通りです。
@@ -72,6 +79,10 @@ window.onload = function(){
 		var infoLabel = new Label('enchant.js サンプル')
 
 		// 画像の任意の範囲を切り取って、新しい画像を作成するには、「Surface」オブジェクト(以下、サーフィス)を使います。
+
+		// 再生する前にボリュームを設定します。
+		// BGMのボリュームを設定する(0~1)
+		core.bgm.volume = 0.5;
 
 		// サーフィスを作成するには、まず、「Surface」コンストラクタでオブジェクトを生成します。引数には、幅と高さを指定します。
 		// サーフィスを作成する
@@ -95,6 +106,15 @@ window.onload = function(){
 		core.rootScene.addChild(bg);
 
 		// スプライトで表示する画像を設定する
+
+		// スプライトを作成する
+		// frame : 表示するフレームの番号
+		// image : 表示する画像
+		// rotation : 回転角度
+		// scaleX : x方向の倍率
+		// scaleY : y方向の倍率
+		// x : x座標
+		// y : y座標
 		
 		player.image = core.assets[betty]
 		// 表示するフレームの番号を設定する。
@@ -196,7 +216,26 @@ window.onload = function(){
 			this.y = e.y - this.height/2;
 		});
 
-		
+		bg.addEventListener(Event.TOUCH_END,function(e) {
+			// 「Sound」オブジェクトのプロパティとメソッドは、次の通りです。
+			// pause() : 再生を中断する
+			// play() : 再生を開始する
+			// stop() : 再生を停止する
+
+			// BGMを再生する
+			core.bgm.play();
+
+			// currentTime : 現在再生位置(秒)
+			// duration : 再生時間（秒）。mp3は取得不可
+			// volume : 音量。0(無音)~1(最大)
+
+			// BGMをループさせる
+			if(core.bgm.currentTime >= core.bgm.duration) {
+				core.bgm.currentTime = 0;
+			}
+			// SEを再生する
+			core.se.play();
+		});
 
 		// rootSceneにラベルを追加する
 		core.rootScene.addChild(infoLabel);
