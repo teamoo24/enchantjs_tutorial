@@ -56,7 +56,8 @@ window.onload = function(){
 		var player = new Sprite(player_s.w, player_s.h);
 		// スプライトの主なプロパティは、次の通りです。
 		
-
+		// ラベルを作成する
+		var infoLabel = new Label('enchant.js サンプル')
 
 		// スプライトで表示する画像を設定する
 		
@@ -69,6 +70,15 @@ window.onload = function(){
 		player.tick = 0;
 		// フレーム数をカウントするプロパティを追加
 
+		infoLabel.x = 16;
+		// 表示位置のx座標を設定する
+		infoLabel.y = 0;
+		// 表示位置のy座標を設定する	
+		infoLabel.color = '#00f';
+		// 文字色を設定する
+		infoLabel.font = '14px sens-serif';
+		// フォントサイズとフォントの種類を設定する
+		
 
 
 		// スプライトを実際の画面上に表示するには、表示オブジェクトツリーにスプライトを追加しなければなりません。
@@ -150,6 +160,11 @@ window.onload = function(){
 			this.x = e.x - this.width/2;
 			this.y = e.y - this.height/2;
 		});
+
+		
+
+		// rootSceneにラベルを追加する
+		core.rootScene.addChild(infoLabel);
 	}
 
 	// ゲームをスタート
