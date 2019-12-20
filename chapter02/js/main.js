@@ -66,6 +66,8 @@ window.onload = function(){
 		// 表示位置のx座標を設定する
 		player.x = 120;
 		//表示位置のy座標を設定する
+		player.tick = 0;
+		// フレーム数をカウントするプロパティを追加
 
 
 
@@ -86,10 +88,24 @@ window.onload = function(){
 		// core.input.a : 指定した特定のキーを押下で反応
 		// core.input.b : 指定した特定のキーを押下で反応
 		player.addEventListener(Event.ENTER_FRAME, function(e) {
+			// スプライトをアニメーション表示する際のフレームの切り替え順番は、画像により異なります。
+			// ここで使用しているキャラクターの画像で歩行アニメーションを表示するには、次の順番でフレームを切り替える必要があります。
+			// 左：1,5,9,13
+			// 右：3,7,11,15
+			// 上：2,6,10,14
+			// 下：0,4,8,12
+			// 順番の通り切り替えるには、まず、フレーム数をカウントする「tick」プロパティを追加します。
+			// このプロパティは、移動操作を行った際にフレーム数をカウントします。なお、「tick」プロパティは独自に定義したプロパティで
+			// ゲーム自体のフレーム数(「core.frame」プロパティ)とは異なるので注意してください。
+
 			// 左ボタンが押されたら、スプライトをx方向に「-4」ピクセル移動
 			if(core.input.left) {
 				if(this.x> 0) {
 					this.x -=4;
+					// スプライトのフレーム番号を切り替えてアニメーションを表示する
+					this.frame = this.tick%4*4+1
+					// フレーム数をインクリメントする
+					this.tick ++;
 				}
 			}
 
@@ -97,6 +113,8 @@ window.onload = function(){
 			if(core.input.right) {
 				if(this.x + player_s.w< canvas.width) {
 					this.x += 4;
+					this.frame = this.tick%4*4+3
+					this.tick ++;
 				}
 			}
 
@@ -104,6 +122,8 @@ window.onload = function(){
 			if(core.input.up) {
 				if(this.y > 0) {
 					this.y -= 4
+					this.frame = this.tick%4*4+2
+					this.tick ++;
 				}
 			}
 
@@ -111,6 +131,8 @@ window.onload = function(){
 			if(core.input.down) {
 				if(this.y + player_s.h < canvas.height) {
 					this.y += 4
+					this.frame = this.tick%4*4
+					this.tick ++;
 				}
 			}
 		});
