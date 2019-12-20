@@ -2,6 +2,15 @@ enchant();
 
 window.onload = function(){
 	
+	const canvas = {
+		width: 320,
+		height: 320
+	}
+
+	const player_s = {
+		w: 48,
+		h: 48
+	}
 	//ゲームオブジェクトを作成
 	core = new Core(320, 320);
 
@@ -44,7 +53,7 @@ window.onload = function(){
 		// x : x座標
 		// y : y座標
 
-		var player = new Sprite(48, 48);
+		var player = new Sprite(player_s.w, player_s.h);
 		// スプライトの主なプロパティは、次の通りです。
 		
 
@@ -58,12 +67,46 @@ window.onload = function(){
 		player.x = 120;
 		//表示位置のy座標を設定する
 
+
+
 		// スプライトを実際の画面上に表示するには、表示オブジェクトツリーにスプライトを追加しなければなりません。
 		// ここでは、ルート氏＾ンにスプライトを追加します。
 		// ルートシーンにスプライトを追加するには「Core」オブジェクトの「rootScene」プロパティでルートシーンを参照し、
 		// 「addChild」メソッドを実行します。「addChild」メソッドの引数は、スプライトを指定します。
 		//rootSceneにスプライトを追加します。
 		core.rootScene.addChild(player);
+
+		player.addEventListener("enterframe", function(e) {
+			if(core.input.left) {
+				if(this.x> 0) {
+					this.x -=4;
+				}
+			}
+
+			if(core.input.right) {
+				if(this.x + player_s.w< canvas.width) {
+					this.x += 4;
+				}
+			}
+
+			if(core.input.up) {
+				if(this.y > 0) {
+					this.y -= 4
+				}
+			}
+
+			if(core.input.down) {
+				if(this.y + player_s.h < canvas.height) {
+					this.y += 4
+				}
+			}
+		});
+
+		// 「touchmove」イベントが発生したときに実行するリスナを登録する
+		player.addEventListener("touchmove",function(e) {
+			this.x = e.x - this.width/2;
+			this.y = e.y - this.height/2;
+		});
 	}
 
 	// ゲームをスタート
