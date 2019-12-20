@@ -11,6 +11,17 @@ window.onload = function(){
 		w: 48,
 		h: 48
 	}
+
+	const hana = {
+		sx : 0,
+		sy : 96,
+		sw : 126,
+		sh : 64,
+		dx : 64,
+		dy : 64,
+		dw : 126,
+		dh : 64 
+	}
 	//ゲームオブジェクトを作成
 	core = new Core(320, 320);
 
@@ -21,12 +32,13 @@ window.onload = function(){
 
 	// bettyのsrcを指定
 	betty = './img/betty.png'
+	flowers = './img/flowers.png'
 
 	// ゲームで使用する画像ファイルをプリロードするには「Core」オブジェクトの「preload」メソッド
 	// (「core.preload」)を使います。引数には、画像ファイルのパスを指定します。
 	// 複数の場合には、「,」で区切って列挙します。
 	// ゲームで使用する画像ファイルを指定
-	core.preload(betty);
+	core.preload(betty, flowers);
 
 	// ファイルのプリロードが完了したときに実行される関数
 	core.onload = function() {
@@ -58,6 +70,29 @@ window.onload = function(){
 		
 		// ラベルを作成する
 		var infoLabel = new Label('enchant.js サンプル')
+
+		// 画像の任意の範囲を切り取って、新しい画像を作成するには、「Surface」オブジェクト(以下、サーフィス)を使います。
+
+		// サーフィスを作成するには、まず、「Surface」コンストラクタでオブジェクトを生成します。引数には、幅と高さを指定します。
+		// サーフィスを作成する
+		var image = new Surface(canvas.width, canvas.height);
+		// 「flowers.png」の(0,96)の位置から幅「126」ピクセル、高さ「64」ピクセルの領域を
+		// サーフィスの(64, 64)の位置に幅「126」ピクセル、高さ「64」ピクセルで描画する
+		
+		// 次に、「draw」メソッド引数で指定した画像「サーフィス」を描画します。「draw」メソッドの引数の指定方法には、次の四つがあります。
+		// image.draw(image) : imageをサーフィスの(0,0)の位置に描画する
+		// image.draw(image, dx, dy) : imageをサーフィスの(dx, dy)の位置に描画する
+		// image.draw(image, dx, dy, dw, dh) : imageをサーフィスの(dx, dy)の位置に幅(dw)ピクセル、高さ(dh)ピクセルで描画する
+		// image.draw(image, sw, sy, sw, sh, dx, dy, dw, dh) : imageの(sx,sy)の位置から幅(sw),高さ(sh)ピクセルの領域を、サーフィスの(dx, dy)の位置に幅dw,高さdwピクセルで描画します。
+		image.draw(core.assets[flowers], hana.sx, hana.sy, hana.sw, hana.sh, hana.dx, hana.dy, hana.dw, hana.dh)
+
+		// サーフィスを表示するためのスプライト（背景）を作成します。
+		var bg = new Sprite(canvas.width, canvas.height)
+		// スプライトにサーフィスを設定する
+		bg.image = image;
+
+		// ルートシーンにスプライトを追加
+		core.rootScene.addChild(bg);
 
 		// スプライトで表示する画像を設定する
 		
