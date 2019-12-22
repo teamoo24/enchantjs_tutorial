@@ -23,16 +23,46 @@ const hana = {
 	dh : 64
 }
 
+const coin_s = {
+	w:32,
+	h:32,
+}
+
 // bettyのsrcを指定
 const betty = './img/betty.png'
 // flowersのsrcを指定
 const flowers = './img/flowers.png'
 // マップで使用するタイルセット画像を設定する
 const map1 = './img/map1.png'
+// コインイメージのsrcを指定
+const piece = './img/piece.png'
+
 // one_0のsrcを指定
 const one_0 = './sound/one_0.mp3'
 // Readyのsrcを指定
 const Ready = './sound/Ready.wav'
+
+// コインを作るクラス
+var Coin = enchant.Class.create(enchant.Sprite, {
+	initialize: function(x, y, w, h) {
+		enchant.Sprite.call(this,w,h);
+		this.x = x;
+		this.y = y;
+		this.image = core.assets[piece];
+		this.tick = 0;
+		// アニメーションパターン
+		this.anime = [8,9,10,11];
+		// アニメーション表示をする処理
+		this.addEventListener(Event.ENTER_FRAME, function(e) {
+			if(this.tick <= 8) {
+				this.frame = this.tick
+			} else {
+				this.frame = this.anime[this.tick%4];
+			}
+			this.tick++;
+		});
+	}
+});
 
 // プリイヤーキャラクターを作成するクラス
 // 「Sprite」クラウを継承
@@ -147,11 +177,14 @@ window.onload = function(){
 	//fps(1秒あたりの画面の描画回数)を設定(省略時は「30」)
 	core.fps = 16;
 
+	// スコアを保持するプロパティ追加
+	core.score = 0;
+
 	// ゲームで使用する画像ファイルをプリロードするには「Core」オブジェクトの「preload」メソッド
 	// (「core.preload」)を使います。引数には、画像ファイルのパスを指定します。
 	// 複数の場合には、「,」で区切って列挙します。
 	// ゲームで使用する画像ファイルと音ファイルを指定
-	core.preload(betty, map1, flowers, one_0, Ready);
+	core.preload(betty, map1, flowers, one_0, Ready, piece);
 
 	// サウンドを再生するには、まず、「Sound」オブジェクトを「load」メソッドでサウンドファイルを
 	// 読み込みます。引数には「mp3」形式、「wab」形式のサウンドファイルのパスとMIME Type(省略可)を指定します。
@@ -410,17 +443,52 @@ window.onload = function(){
 		];
 	// シーンにマップを追加する
 	scene.addChild(map);
+
+	var coins= [];
+	for (var i=0;i < 10; i++) {
+		let coin = new Coin(128,80+16*i,coin_s.w,coin_s.h);
+		scene.addChild(coin);
+		coins[i] = coin;
+	}
 	// プレイヤーキャラを作成する
 	var player = new Player(0, py, player_s.w, player_s.h, map);
-
 	// シーンにプレイヤーのスプライトを追加する
 	scene.addChild(player);
 
 	scene.addEventListener(Event.ENTER_FRAME, function(e){
 		// プレイやのx座標が「1」以下なら、前のシーンに切り替える
-
-		if(player.x < -20)core.popScene();
+		if(player.x < -20) {
+			core.popScene();
+		}
+		// プレイヤーキャラとコインの当たり判定
+		for(var i in coins) {
+			if(player.within(coins[i],coin_s.w/2)) {
+				// コインを取ったスコアを加算して更新
+				core.score = scoreLabel.score += 100;
+				// 取ったコインを削除する
+				scene.removeChild(coins[i]);
+				delete coins[i];
+			}
+		}
 	});
+
+	// スコアをフォントで表示するラベルを作成
+
+	// スコアの表示と加算する処理は、２つ目のマップ（シーン）で行なっています。このため、最初にマップに戻った時に、
+	// スコアラベルが削除されるので、スコアを保持できません。そこで「Core」オブジェことの「score」プロパティに、スコアラベルの「score」
+	// プロパティの値を代入して、スコアを保持するようにしています。このように、ゲーム全体で保持しておきたい値は、「Core」オブジェクトのプロパティに
+	// 保存しておくのがポイントです。
+
+	// スコアラベルのプロパティ
+	// easing : イージングの間隔、「0」でイージングなし
+	// label : ラベル文字列（既定は[SCORE:]）
+	// score : 点数
+	// 引数はラベル表示位置のxy座標
+	var scoreLabel = new ScoreLabel(16, 0);
+	// 初期値設定
+	scoreLabel.score = core.score;
+	// シーンにラベルを追加する
+	scene.addChild(scoreLabel)
 
 	return scene; // シーンを返す
 }
