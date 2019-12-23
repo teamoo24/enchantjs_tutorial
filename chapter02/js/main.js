@@ -174,7 +174,7 @@ window.onload = function(){
 	// ゲームオブジェクトを作成
 	// ちなみにここでvarやletを付けてない理由は全体関数として使うとき読み込めるためである
 	// 覚えておこう
-	core = new Core(320, 320);
+	this.core = new Core(320, 320);
 
 	//fps(1秒あたりの画面の描画回数)を設定(省略時は「30」)
 	core.fps = 16;
