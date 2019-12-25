@@ -182,6 +182,9 @@ window.onload = function(){
 	// スコアを保持するプロパティ追加
 	core.score = 0;
 
+	// 経過時間を保持するためのプロパティ
+	core.time = 0;
+
 	// ゲームで使用する画像ファイルをプリロードするには「Core」オブジェクトの「preload」メソッド
 	// (「core.preload」)を使います。引数には、画像ファイルのパスを指定します。
 	// 複数の場合には、「,」で区切って列挙します。
@@ -443,57 +446,74 @@ window.onload = function(){
 			[0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0],
 			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 		];
-	// シーンにマップを追加する
-	scene.addChild(map);
 
-	var coins= [];
-	for (var i=0;i < 10; i++) {
-		let coin = new Coin(128,80+16*i,coin_s.w,coin_s.h);
-		scene.addChild(coin);
-		coins[i] = coin;
-	}
-	// プレイヤーキャラを作成する
-	var player = new Player(0, py, player_s.w, player_s.h, map);
-	// シーンにプレイヤーのスプライトを追加する
-	scene.addChild(player);
+		// シーンにマップを追加する
+		scene.addChild(map);
 
-	scene.addEventListener(Event.ENTER_FRAME, function(e){
-		// プレイやのx座標が「1」以下なら、前のシーンに切り替える
-		if(player.x < -20) {
-			core.popScene();
+		var coins= [];
+		for (var i=0;i < 10; i++) {
+			let coin = new Coin(128,80+16*i,coin_s.w,coin_s.h);
+			scene.addChild(coin);
+			coins[i] = coin;
 		}
-		// プレイヤーキャラとコインの当たり判定
-		for(var i in coins) {
-			if(player.within(coins[i],coin_s.w/2)) {
-				// コインを取ったスコアを加算して更新
-				core.score = scoreLabel.score += 100;
-				// 取ったコインを削除する
-				scene.removeChild(coins[i]);
-				delete coins[i];
+		// プレイヤーキャラを作成する
+		var player = new Player(0, py, player_s.w, player_s.h, map);
+		// シーンにプレイヤーのスプライトを追加する
+		scene.addChild(player);
+
+		scene.addEventListener(Event.ENTER_FRAME, function(e){
+			// 「core.time」プロパティに「timeLabel.time」プロパティを代入する
+			core.time = timeLabel.time;
+
+			// プレイやのx座標が「1」以下なら、前のシーンに切り替える
+			if(player.x < -20) {
+				core.popScene();
 			}
-		}
-	});
+			// プレイヤーキャラとコインの当たり判定
+			for(var i in coins) {
+				if(player.within(coins[i],coin_s.w/2)) {
+					// コインを取ったスコアを加算して更新
+					core.score = scoreLabel.score += 100;
+					// 取ったコインを削除する
+					scene.removeChild(coins[i]);
+					delete coins[i];
+				}
+			}
+		});
 
-	// スコアをフォントで表示するラベルを作成
+		// スコアをフォントで表示するラベルを作成
 
-	// スコアの表示と加算する処理は、２つ目のマップ（シーン）で行なっています。このため、最初にマップに戻った時に、
-	// スコアラベルが削除されるので、スコアを保持できません。そこで「Core」オブジェことの「score」プロパティに、スコアラベルの「score」
-	// プロパティの値を代入して、スコアを保持するようにしています。このように、ゲーム全体で保持しておきたい値は、「Core」オブジェクトのプロパティに
-	// 保存しておくのがポイントです。
+		// スコアの表示と加算する処理は、２つ目のマップ（シーン）で行なっています。このため、最初にマップに戻った時に、
+		// スコアラベルが削除されるので、スコアを保持できません。そこで「Core」オブジェことの「score」プロパティに、スコアラベルの「score」
+		// プロパティの値を代入して、スコアを保持するようにしています。このように、ゲーム全体で保持しておきたい値は、「Core」オブジェクトのプロパティに
+		// 保存しておくのがポイントです。
 
-	// スコアラベルのプロパティ
-	// easing : イージングの間隔、「0」でイージングなし
-	// label : ラベル文字列（既定は[SCORE:]）
-	// score : 点数
-	// 引数はラベル表示位置のxy座標
-	var scoreLabel = new ScoreLabel(16, 0);
-	// 初期値設定
-	scoreLabel.score = core.score;
-	// シーンにラベルを追加する
-	scene.addChild(scoreLabel)
+		// スコアラベルのプロパティ
+		// easing : イージングの間隔、「0」でイージングなし
+		// label : ラベル文字列（既定は[SCORE:]）
+		// score : 点数
+		// 引数はラベル表示位置のxy座標
+		var scoreLabel = new ScoreLabel(16, 0);
+		// 初期値設定
+		scoreLabel.score = core.score;
+		// シーンにラベルを追加する
+		scene.addChild(scoreLabel)
 
-	return scene; // シーンを返す
-}
+		// タイムラベルを作成するには、まず、「TimeLabel」コンストラクタでオブジェクトを生成します。引数（省略可）には、X座標、Y座標、カウントタイプ
+		// を指定します。次に、「time」プロパティにカウント時間の初期値を設定します。
+
+		// タイムラベルのプロパティ
+		// counttype : countdoup(規定値)、countdown
+		// time : カウント時間
+		// 経過時間をフォントで表示するラベルを作成
+		var timeLabel = new TimeLabel(16,304)
+		// 初期値セット
+		timeLabel.time = core.time;
+		// シーンにラベルを追加する
+		scene.addChild(timeLabel);
+
+		return scene; // シーンを返す
+	}
 	// ゲームをスタート
 	core.start();
 }
