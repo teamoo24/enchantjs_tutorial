@@ -204,6 +204,24 @@ window.onload = function(){
 
 	// ファイルのプリロードが完了したときに実行される関数
 	core.onload = function() {
+		// メモリに値があるかをチェック
+		if(localStorage.getItem('player')) {
+			// 読み込んだJSONデータをplayer_statusに代入
+			var player_status = JSON.parse(localStorage.getItem('player'))
+			// 保存されたデータの読み込み
+			core.life = player_status['life']
+			core.score = player_status['score']
+		} else {
+			// データ保存用の変数の追加
+			var player = {
+				life : core.life,
+				score : core.score
+			}
+			// ライフとスコアをIDを指定してメモリに書き込む
+			localStorage.setItem('player', JSON.stringify(player));
+		}
+
+
 		// スプライトを作成するには、まず「Sprite」コンストラクタでオブジェクトを生成します。
 		// 引数には、スプライトの幅と高さを指定します。次に「image」プロパティに表示する画像を「Core」
 		// オブジェクトの「assets」プロパティ(「core.assets」プロパティ)で取得して設定します。
@@ -456,7 +474,32 @@ window.onload = function(){
 					});
 				}
 			}
+			// セーブラベルの文字列をセットする
+			savelabel.text = 'SAVE';
 		});
+
+		// セーブラベル(タッチでセーブを実行するラベル)を作成する
+		var savelabel = new MutableText(16,320 -16);
+		// セーブラベルの「touchstart」イベントリスナ
+		savelabel.addEventListener(Event.TOUCH_START,function(){
+			this.background = '#F0F0F0';
+		});
+		// セーブラベルの「touchend」イベントリスナ
+		savelabel.addEventListener(Event.TOUCH_END, function(){
+			this.background = '';
+
+			// データ保存処理
+
+			// データ保存用の変数の追加
+			var player = {
+				life : core.life,
+				score : core.score
+			}
+			// ライフとスコアをIDを指定してメモリに書き込む
+			localStorage.setItem('player', JSON.stringify(player));
+		});
+
+		core.rootScene.addChild(savelabel)
 
 		// ライフラベルを作成するには、「LifeLabel」コンストラクタでオブジェクトを生成する。
 		// 引数（省略可）には、x座標、y座標、最大ライフ数を指定する。
