@@ -406,8 +406,34 @@ window.onload = function(){
 				// プレイヤーの初期位置に移動
 				player.x = 120;
 				player.y = 50;
+
+				// 「enchant.js」のアニメーションエンジンはActionScriptのトゥイーン制御ライブラリ「Tweener」
+				// のような機能を提供しており、簡単な命令でスプライトの動きを制御することができます。アニメーションエンジン
+				// メソッドを利用するには、スプライトのオブジェクトの後ろに「.tl」を付けてメソッドを呼びます。
+				// fadeIn(time[,easing]) : フェードイン
+				// fadeOut(time[,easing]) : フェードアウト
+				// scaleTo(scaleX, scaleY, time[, easing]) : スケールを変更
+				// delay(time) : 指定時間(フレーム)まつ。
+				// rotateBy(deg, time[,easing]) : 回転する
+				// and() : 並列に実行する
+				// loop() : 繰り返す
+				// unloop() : loop()の停止
+
+				// 以下はアニメーションの引数の説明となってます。
+				// time : フレーム数、
+				// scaleX : 変更後の幅
+				// scaleY : 変更後の高さ
+				// deg : 角度
+				// easing : イージング
+
+				// 点滅表示する
+				player.tl.fadeOut(10).fadeIn(5).fadeOut(10).fadeIn(5)
 				// ライフが「0」になったらゲームストップ
-				if(core.life == 0) core.stop(); 
+				if(core.life == 0) {
+					player.tl.rotateBy(360, 30).
+					and().fadeOut(30).
+					and().scaleTo(0.2,30, enchant.Easing.BOUNCE_EASEOUT);
+				}
 			}
 		});
 
