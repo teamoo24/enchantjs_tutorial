@@ -427,12 +427,33 @@ window.onload = function(){
 				// easing : イージング
 
 				// 点滅表示する
-				player.tl.fadeOut(10).fadeIn(5).fadeOut(10).fadeIn(5)
+				player.tl.fadeOut(1).fadeIn(5).fadeOut(1).fadeIn(5)
 				// ライフが「0」になったらゲームストップ
 				if(core.life == 0) {
 					player.tl.rotateBy(360, 30).
 					and().fadeOut(30).
-					and().scaleTo(0.2,30, enchant.Easing.BOUNCE_EASEOUT);
+					// ゲームスタート/ゲームオーバー画面の表示方法
+					// ゲームスタートの画面は、「start_end.js」プラグインを読み込むだけで、表示されるようになります。
+					// ゲームオーバー画面を表示するには「Core」オブジェクトの「end」メソッドを実行します。
+					and().scaleTo(0.2,30, enchant.Easing.BOUNCE_EASEOUT).cue({
+						// 関数の遅延実行
+						// 指定した関数を、指定したフレーム後に遅延させて実行するには、アニメーション「cue」
+						// メソッドを使います。「cue」メソッドには、実行したい関数をフレーム数をキーとした連想配列
+						// で複数指定して追加できます。
+
+						// ex)
+						// sprite.tl.cue({
+						// 10: function(){10フレーム経過した後に実行される関数},
+						// 20: function(){20フレーム経過した後に実行される関数},
+						// 30: function(){30フレーム経過した後に実行される関数},
+						// })
+						// 10フレーム後にゲームオーバー画面を表示
+						10:function() {
+							// 
+							// ゲームオーバー
+							core.end()
+						}
+					});
 				}
 			}
 		});
