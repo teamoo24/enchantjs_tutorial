@@ -185,6 +185,9 @@ window.onload = function(){
 	// 経過時間を保持するためのプロパティ
 	core.time = 0;
 
+	// ライフを保持するプロパティを追加する
+	core.life = 3;
+
 	// ゲームで使用する画像ファイルをプリロードするには「Core」オブジェクトの「preload」メソッド
 	// (「core.preload」)を使います。引数には、画像ファイルのパスを指定します。
 	// 複数の場合には、「,」で区切って列挙します。
@@ -379,14 +382,43 @@ window.onload = function(){
 		// rootSceneにラベルを追加する
 		core.rootScene.addChild(infoLabel);
 
+		// トラップのスプライトを作成する
+		var trap = new Sprite(16, 16);
+		trap.image = core.assets[map1];
+		trap.frame = 43;
+		trap.x = 136;
+		trap.y = 152;
+		core.rootScene.addChild(trap)
+
 		// rootsceneで「enterframe」イベントが発生した時に実行されるリスナ
 		core.rootScene.addEventListener(Event.ENTER_FRAME, function(e) {
 			if (player.x > canvas.width) {
 				player.x = 280;
 				core.pushScene(core.field(player.x, player.y));
 				// popした時のためにx座標を少し戻しておく
+			}	
+			// トラップに当たったら、
+			if(player.within(trap, 30)) {
+				// ライフを更新するには、ライフラベルの「life」プロパティに新しい値を代入する
+
+				// ライフを一つ減らして、表示を更新する
+				lifeLabel.life = --core.life;
+				// プレイヤーの初期位置に移動
+				player.x = 120;
+				player.y = 50;
+				// ライフが「0」になったらゲームストップ
+				if(core.life == 0) core.stop(); 
 			}
 		});
+
+		// ライフラベルを作成するには、「LifeLabel」コンストラクタでオブジェクトを生成する。
+		// 引数（省略可）には、x座標、y座標、最大ライフ数を指定する。
+
+		// ライフをアイコンで表示するラベルを作成
+		// 引数はラベル表示位置のxy座標とライフ数の初期値
+		var lifeLabel = new LifeLabel(180, 0, core.life);
+		// rootSceneにライフラベルを追加する
+		core.rootScene.addChild(lifeLabel)
 	}
 
 	// 画面を別の画面に切り替えるには、「Scene」オブジェクト(以下、シーン)を使います。
